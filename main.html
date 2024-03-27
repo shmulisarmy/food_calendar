@@ -33,10 +33,10 @@
                 return true;
             }
 
-            static minus(recipe, copyOfIngredients) {
+            static minus(recipe, copyOfIngredients, plannedAmount) {
                 //remove from copyOfIngredients the contents of recipe
                 for (const reqIngredient in recipe) {
-                    const reqAmount = recipe[reqIngredient];
+                    const reqAmount = recipe[reqIngredient] * plannedAmount;
                     copyOfIngredients[reqIngredient] -= reqAmount;
                 }
             }
@@ -52,7 +52,7 @@
                         if (!User.canMake(dish, copyOfIngredients, plannedAmount)) {
                             actualCalendar[datIndex][dishStr] = ["cnm", plannedAmount];
                         } else{
-                            User.minus(dish, copyOfIngredients);
+                            User.minus(dish, copyOfIngredients, plannedAmount);
                             actualCalendar[datIndex][dishStr] = ["cm", plannedAmount];
                         }
                     })
@@ -100,10 +100,10 @@
                     }}>x</button>
                     <div class="changeAmount">
                         <button className="minus" onClick={() => {
-                            ChangePlannedAmount(dayIndex, event, 1)
+                            ChangePlannedAmount(dayIndex, event, -1)
                         }}>-1</button>   
                         <button className="add" onClick={() => {
-                            ChangePlannedAmount(dayIndex, event, -1)
+                            ChangePlannedAmount(dayIndex, event, 1)
                         }}>+1</button>   
                     </div>
                 </div>
@@ -140,8 +140,11 @@
             }
 
             function ChangePlannedAmount(dayIndex, eventStr, numberToChangeBy){
-                shmuli.calendar[dayIndex][eventStr] -= numberToChangeBy;
-                setData(shmuli.calculate());
+                if (shmuli.calendar[dayIndex][eventStr] + numberToChangeBy < 0){
+                    return;
+                }
+                    shmuli.calendar[dayIndex][eventStr] += numberToChangeBy
+                    setData(shmuli.calculate());
             }
 
             return (
@@ -167,6 +170,9 @@
         <p>signup</p>
         <p>login</p>
     </nav>
+    <!-- <div class="toggle-nav">
+        Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nesciunt maxime, pariatur aliquam repudiandae aut dolore veniam quas laboriosam doloribus natus, odio suscipit iste fugiat optio ex? Doloremque eaque neque obcaecati?
+    </div> -->
     <div id="root"></div>
 </body>
 
