@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript in Browser</title>
+    <link rel="stylesheet" href="main.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"></script>
+    <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    <script defer type="text/babel">
+        // Create User class
+        class User {
+            constructor(recipes, availableIngredients, calendar) {
+                this.recipes = recipes;
+                this.availableIngredients = availableIngredients;
+                this.calendar = calendar;
+            }
+
+            static canMake(recipe, copyOfIngredients) {
+                for (const reqIngredient in recipe) {
+                    const reqAmount = recipe[reqIngredient];
+                    if (
+                        !(
+                            reqIngredient in copyOfIngredients &&
+                            copyOfIngredients[reqIngredient] >= reqAmount
+                        )
+                    ) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            static minus(recipe, copyOfIngredients) {
+                //remove from copyOfIngredients the contents of recipe
+                for (const reqIngredient in recipe) {
+                    const reqAmount = recipe[reqIngredient];
+                    copyOfIngredients[reqIngredient] -= reqAmount;
+                }
+            }
+
+            calculate() {
+                const copyOfIngredients = { ...this.availableIngredients };
+                const actualCalendar = [];
+                for (const day of this.calendar) {
+                    actualCalendar.push({});
+                    for (const dishStr of day) {
+                        const dish = this.recipes[dishStr];
+                        if (!User.canMake(dish, copyOfIngredients)) {
+                            actualCalendar[actualCalendar.length - 1][dishStr] = "cnm";
+                            continue;
+                            cnm;
+                        }
+                        User.minus(dish, copyOfIngredients);
+                        actualCalendar[actualCalendar.length - 1][dishStr] = "cm";
+                    }
+                }
+                return actualCalendar;
+            }
+        }
+
+        // Create a new instance of User
+        const shmuli = new User(
+            {
+                matza: { flour: 1, water: 2 },
+                donut: { flour: 1, water: 2, sugar: 3 },
+            },
+            { flour: 30, sugar: 70, water: 80 },
+            [["matza", "donut"], ["matza", "donut"], ["matza"]]
+        );
+
+
+
+
+        function Event({ event, eventIndex, status }) {
+            const reRender = React.useContext(reRenderContext)
+            const dayIndex = React.useContext(dayIndexContext)
+            return (
+                <div className={`event ${status}`}>
+                    <p>{event}</p>
+                    <p>{dayIndex}: {eventIndex}</p>
+                    <button onClick={() => {
+                        console.log(dayIndex, eventIndex)
+                        reRender(dayIndex, eventIndex)
+                    }}> delete</button>
+                </div>
+            );
+        }
+
+        function Day(day) {
+            return (
+                <div className="day">
+                    {Object.keys(day).map((event, eventIndex) => (
+                        <Event {...{ event, eventIndex }} status={day[event]} />
+                    ))}
+                </div>
+            );
+        }
+
+        function Calendar() {
+            const [data, setData] = React.useState(shmuli.calculate());
+
+            function reRender(dayIndex, eventIndex) {
+                alert(`you are deleting, ${dayIndex}, ${eventIndex}`)
+                // setData(shmuli.calculate());
+            }
+
+            return (
+                <div id="calendar">
+                    <reRenderContext.Provider value={reRender}>
+                        {data.map((day, dayIndex) => (
+                            <dayIndexContext.Provider value={dayIndex}>
+                                <Day key={dayIndex} {...day} />
+                            </dayIndexContext.Provider>
+                        ))}
+                    </reRenderContext.Provider>
+                </div>
+            );
+        }
+
+        const reRenderContext = React.createContext();
+        const dayIndexContext = React.createContext();
+
+        ReactDOM.render(<Calendar />, document.getElementById("root"));
+
+
+
+
+    </script>
+</head>
+
+<body>
+    <div id="root"></div>
+</body>
+
+</html>
