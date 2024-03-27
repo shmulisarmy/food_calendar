@@ -75,6 +75,20 @@
                 {"matza": 3, "donut": 1}, 
                 {"matza": 1, "donut": 1}, 
                 {"matza": 1, "donut": 2}, 
+                {"matza": 1, "donut": 2}, 
+                {"matza": 1, "donut": 2}, 
+                {"matza": 1, "donut": 2}, 
+                {"matza": 1, "donut": 2}, 
+                {"matza": 1, "donut": 2}, 
+                {"matza": 1, "donut": 2}, 
+                {"matza": 1, "donut": 2}, 
+                {"matza": 1, "donut": 2}, 
+                {"matza": 1, "donut": 2}, 
+                {"matza": 1, "donut": 2}, 
+                {"matza": 1, "donut": 2}, 
+                {"matza": 1, "donut": 2}, 
+                {"matza": 1, "donut": 2}, 
+                {"matza": 1, "donut": 2}, 
             ]
         );
 
@@ -108,7 +122,7 @@
                     {Object.keys(day).map((event) => (
                         <Event {...{ dayIndex, event }} status={day[event][0]} plannedAmount={day[event][1]} />
                     ))}
-                    <button onClick={() => {
+                    <button className="add-event" onClick={() => {
                         addEvent(dayIndex)
                     }}>add event</button>
                 </div>

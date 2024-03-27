@@ -10,7 +10,9 @@ main{
 }
 #calendar {
     margin: 12%;
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    grid-gap: 1vw;
     /* flex-direction: column; */
 }
 
@@ -41,6 +43,10 @@ button:hover{
     top: 0%;
     left: 0%;
     background-color: red;
+}
+
+.add-event{
+    background-color: lightgreen;
 }
 
 .changeAmount{
