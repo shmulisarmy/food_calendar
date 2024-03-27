@@ -103,7 +103,7 @@
             const [data, setData] = React.useState(shmuli.calculate());
 
             function reRender(dayIndex, eventIndex) {
-                alert(`you are deleting, ${dayIndex}, ${eventIndex}`)
+                console.log(`you are deleting, ${dayIndex}, ${eventIndex}`)
                 shmuli.calendar[dayIndex].splice(eventIndex, 1);
                 setData(shmuli.calculate());
             }
