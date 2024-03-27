@@ -1,6 +1,17 @@
-main{
-    margin: 12%;
+body{
+    margin: 0%;
 }
+
+nav{
+    background-color: black;
+    color: white;
+    position: sticky;
+    top: 0%;
+    display: flex;
+    justify-content: space-around;
+    z-index: 1;
+}
+
 
 .cm{
     color: green;
@@ -9,7 +20,7 @@ main{
     color: red;
 }
 #calendar {
-    margin: 12%;
+    margin: 8%;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     grid-gap: 1vw;
