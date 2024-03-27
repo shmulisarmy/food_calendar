@@ -44,19 +44,18 @@
             calculate() {
                 const copyOfIngredients = { ...this.availableIngredients };
                 const actualCalendar = [];
-                for (const day of this.calendar) {
+                this.calendar.forEach((day, datIndex) => {
                     actualCalendar.push({});
                     for (const dishStr of day) {
                         const dish = this.recipes[dishStr];
                         if (!User.canMake(dish, copyOfIngredients)) {
-                            actualCalendar[actualCalendar.length - 1][dishStr] = "cnm";
+                            actualCalendar[datIndex][dishStr] = "cnm";
                             continue;
-                            cnm;
                         }
                         User.minus(dish, copyOfIngredients);
-                        actualCalendar[actualCalendar.length - 1][dishStr] = "cm";
+                        actualCalendar[datIndex][dishStr] = "cm";
                     }
-                }
+                })
                 console.log(actualCalendar)
                 return actualCalendar;
             }
