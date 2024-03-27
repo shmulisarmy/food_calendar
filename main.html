@@ -85,11 +85,10 @@
             const {deleteEvent, ChangePlannedAmount} = React.useContext(reRenderContext)
             return (
                 <div className={`event ${status}`}>
-                    <p>{event}: {plannedAmount}</p>
-                    <p>dayIndex: {dayIndex}</p>
-                    <button onClick={() => {
+                    <p className="eventAndNumberDisplay">{event}: {plannedAmount}</p>
+                    <button className="delete" onClick={() => {
                         deleteEvent(dayIndex, event)
-                    }}> delete</button>
+                    }}>x</button>
                     <div class="changeAmount">
                         <button className="minus" onClick={() => {
                             ChangePlannedAmount(dayIndex, event, 1)

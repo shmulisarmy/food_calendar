@@ -18,20 +18,39 @@ main{
     border: 1px solid black;
     padding: 5px;
     margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
 }
 
 .event {
     border: 1px solid gray;
-    padding: 3px;
+    padding: 20px;
+    margin: 12px;
     margin-right: 5px;
+    position: relative;
 }
 button:hover{
     cursor: pointer;
+}
+.eventAndNumberDisplay{
+    margin-top: 50%;
+}
+
+.delete{
+    position: absolute;
+    top: 0%;
+    left: 0%;
+    background-color: red;
+}
+
+.changeAmount{
+    display: flex;
+    justify-content: space-around;
 }
 
 .add{
     background-color: green;
 }
 .minus{
-    background-color: red;
+    background-color: orange;
 }
