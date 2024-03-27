@@ -81,9 +81,8 @@
 
 
 
-        function Event({ event, eventIndex, status }) {
+        function Event({ dayIndex, event, eventIndex, status }) {
             const [deleteEvent, addEvent] = React.useContext(reRenderContext)
-            const dayIndex = React.useContext(dayIndexContext)
             return (
                 <div className={`event ${status}`}>
                     <p>{event}</p>
@@ -100,7 +99,7 @@
             return (
                 <div className="day">
                     {Object.keys(day).map((event, eventIndex) => (
-                        <Event {...{ event, eventIndex }} status={day[event]} />
+                        <Event {...{ dayIndex, event, eventIndex }} status={day[event]} />
                     ))}
                     <button onClick={() => {
                         addEvent(dayIndex)
@@ -129,9 +128,7 @@
                 <div id="calendar">
                     <reRenderContext.Provider value={[deleteEvent, addEvent]}>
                         {data.map((day, dayIndex) => (
-                            <dayIndexContext.Provider value={dayIndex}>
-                                <Day key={dayIndex} {...{day, dayIndex}} />
-                            </dayIndexContext.Provider>
+                            <Day key={dayIndex} {...{day, dayIndex}} />
                         ))}
                     </reRenderContext.Provider>
                 </div>
@@ -139,7 +136,6 @@
         }
 
         const reRenderContext = React.createContext();
-        const dayIndexContext = React.createContext();
 
         ReactDOM.render(<Calendar />, document.getElementById("root"));
 
