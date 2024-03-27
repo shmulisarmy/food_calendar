@@ -104,7 +104,8 @@
 
             function reRender(dayIndex, eventIndex) {
                 alert(`you are deleting, ${dayIndex}, ${eventIndex}`)
-                // setData(shmuli.calculate());
+                shmuli.calendar[dayIndex].splice(eventIndex, 1);
+                setData(shmuli.calculate());
             }
 
             return (
