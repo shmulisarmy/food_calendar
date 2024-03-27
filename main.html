@@ -82,7 +82,7 @@
 
 
         function Event({ dayIndex, event, status, plannedAmount }) {
-            const {deleteEvent} = React.useContext(reRenderContext)
+            const {deleteEvent, ChangePlannedAmount} = React.useContext(reRenderContext)
             return (
                 <div className={`event ${status}`}>
                     <p>{event}: {plannedAmount}</p>
@@ -90,6 +90,14 @@
                     <button onClick={() => {
                         deleteEvent(dayIndex, event)
                     }}> delete</button>
+                    <div class="changeAmount">
+                        <button className="minus" onClick={() => {
+                            ChangePlannedAmount(dayIndex, event, 1)
+                        }}>-1</button>   
+                        <button className="add" onClick={() => {
+                            ChangePlannedAmount(dayIndex, event, -1)
+                        }}>+1</button>   
+                    </div>
                 </div>
             );
         }
@@ -121,12 +129,16 @@
                 const eventStr = prompt("new event: ");
                 shmuli.calendar[dayIndex].push(eventStr);
                 setData(shmuli.calculate());
+            }
 
+            function ChangePlannedAmount(dayIndex, eventStr, numberToChangeBy){
+                shmuli.calendar[dayIndex][eventStr] -= numberToChangeBy;
+                setData(shmuli.calculate());
             }
 
             return (
                 <div id="calendar">
-                    <reRenderContext.Provider value={{deleteEvent, addEvent}}>
+                    <reRenderContext.Provider value={{deleteEvent, addEvent, ChangePlannedAmount}}>
                         {data.map((day, dayIndex) => (
                             <Day key={dayIndex} {...{day, dayIndex}} />
                         ))}

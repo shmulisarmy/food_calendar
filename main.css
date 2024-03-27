@@ -28,3 +28,10 @@ main{
 button:hover{
     cursor: pointer;
 }
+
+.add{
+    background-color: green;
+}
+.minus{
+    background-color: red;
+}
