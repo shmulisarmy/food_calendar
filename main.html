@@ -18,9 +18,9 @@
                 this.calendar = calendar;
             }
 
-            static canMake(recipe, copyOfIngredients) {
+            static canMake(recipe, copyOfIngredients, plannedAmount) {
                 for (const reqIngredient in recipe) {
-                    const reqAmount = recipe[reqIngredient];
+                    const reqAmount = recipe[reqIngredient] * plannedAmount;
                     if (
                         !(
                             reqIngredient in copyOfIngredients &&
@@ -49,7 +49,7 @@
                     Object.keys(day).forEach((dishStr) =>  {
                         const dish = this.recipes[dishStr];
                         const plannedAmount = day[dishStr]
-                        if (!User.canMake(dish, copyOfIngredients)) {
+                        if (!User.canMake(dish, copyOfIngredients, plannedAmount)) {
                             actualCalendar[datIndex][dishStr] = ["cnm", plannedAmount];
                         } else{
                             User.minus(dish, copyOfIngredients);
@@ -73,7 +73,7 @@
             },
             [
                 {"matza": 3, "donut": 1}, 
-                {"matza": 2, "donut": 1}, 
+                {"matza": 1, "donut": 1}, 
                 {"matza": 1, "donut": 2}, 
             ]
         );
