@@ -82,7 +82,7 @@
 
 
         function Event({ dayIndex, event, eventIndex, status }) {
-            const [deleteEvent, addEvent] = React.useContext(reRenderContext)
+            const {deleteEvent} = React.useContext(reRenderContext)
             return (
                 <div className={`event ${status}`}>
                     <p>{event}</p>
@@ -95,7 +95,7 @@
         }
 
         function Day({day, dayIndex}) {
-            const [deleteEvent, addEvent] = React.useContext(reRenderContext)
+            const {addEvent} = React.useContext(reRenderContext)
             return (
                 <div className="day">
                     {Object.keys(day).map((event, eventIndex) => (
@@ -126,7 +126,7 @@
 
             return (
                 <div id="calendar">
-                    <reRenderContext.Provider value={[deleteEvent, addEvent]}>
+                    <reRenderContext.Provider value={{deleteEvent, addEvent}}>
                         {data.map((day, dayIndex) => (
                             <Day key={dayIndex} {...{day, dayIndex}} />
                         ))}
