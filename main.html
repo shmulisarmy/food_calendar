@@ -46,15 +46,16 @@
                 const actualCalendar = [];
                 this.calendar.forEach((day, datIndex) => {
                     actualCalendar.push({});
-                    for (const dishStr of day) {
+                    Object.keys(day).forEach((dishStr) =>  {
                         const dish = this.recipes[dishStr];
+                        const plannedAmount = day[dishStr]
                         if (!User.canMake(dish, copyOfIngredients)) {
-                            actualCalendar[datIndex][dishStr] = "cnm";
-                            continue;
+                            actualCalendar[datIndex][dishStr] = ["cnm", plannedAmount];
+                        } else{
+                            User.minus(dish, copyOfIngredients);
+                            actualCalendar[datIndex][dishStr] = ["cm", plannedAmount];
                         }
-                        User.minus(dish, copyOfIngredients);
-                        actualCalendar[datIndex][dishStr] = "cm";
-                    }
+                    })
                 })
                 console.log(actualCalendar)
                 return actualCalendar;
@@ -71,23 +72,23 @@
                 flour: 30, sugar: 70, water: 80 
             },
             [
-                ["matza", "donut", "matza", "matza"], 
-                ["matza", "donut"], 
-                ["matza"]
+                {"matza": 3, "donut": 1}, 
+                {"matza": 2, "donut": 1}, 
+                {"matza": 1, "donut": 2}, 
             ]
         );
 
 
 
 
-        function Event({ dayIndex, event, eventIndex, status }) {
+        function Event({ dayIndex, event, status, plannedAmount }) {
             const {deleteEvent} = React.useContext(reRenderContext)
             return (
                 <div className={`event ${status}`}>
-                    <p>{event}</p>
-                    <p>{dayIndex}: {eventIndex}</p>
+                    <p>{event}: {plannedAmount}</p>
+                    <p>dayIndex: {dayIndex}</p>
                     <button onClick={() => {
-                        deleteEvent(dayIndex, eventIndex)
+                        deleteEvent(dayIndex, event)
                     }}> delete</button>
                 </div>
             );
@@ -97,8 +98,8 @@
             const {addEvent} = React.useContext(reRenderContext)
             return (
                 <div className="day">
-                    {Object.keys(day).map((event, eventIndex) => (
-                        <Event {...{ dayIndex, event, eventIndex }} status={day[event]} />
+                    {Object.keys(day).map((event) => (
+                        <Event {...{ dayIndex, event }} status={day[event][0]} plannedAmount={day[event][1]} />
                     ))}
                     <button onClick={() => {
                         addEvent(dayIndex)
@@ -110,9 +111,9 @@
         function Calendar() {
             const [data, setData] = React.useState(shmuli.calculate());
 
-            function deleteEvent(dayIndex, eventIndex) {
-                console.log(`you are deleting, ${dayIndex}, ${eventIndex}`)
-                shmuli.calendar[dayIndex].splice(eventIndex, 1);
+            function deleteEvent(dayIndex, eventStr) {
+                console.log(`you are deleting, ${dayIndex}, ${eventStr}`)
+                delete shmuli.calendar[dayIndex][eventStr];
                 setData(shmuli.calculate());
             }
 
