@@ -9,158 +9,157 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"></script>
     <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
-    <script defer type="text/babel">
-        // Create User class
+    <script defer  type="text/babel">
         class User {
-            constructor(recipes, availableIngredients, calendar) {
-                this.recipes = recipes;
-                this.availableIngredients = availableIngredients;
-                this.calendar = calendar;
-            }
+    constructor(recipes, availableIngredients, calendar) {
+        this.recipes = recipes;
+        this.availableIngredients = availableIngredients;
+        this.calendar = calendar;
+    }
 
-            static canMake(recipe, copyOfIngredients, plannedAmount) {
-                for (const reqIngredient in recipe) {
-                    const reqAmount = recipe[reqIngredient] * plannedAmount;
-                    if (
-                        !(
-                            reqIngredient in copyOfIngredients &&
-                            copyOfIngredients[reqIngredient] >= reqAmount
-                        )
-                    ) {
-                        return false;
-                    }
+    static canMake(recipe, copyOfIngredients, plannedAmount) {
+        for (const reqIngredient in recipe) {
+            const reqAmount = recipe[reqIngredient] * plannedAmount;
+            if (
+                !(
+                    reqIngredient in copyOfIngredients &&
+                    copyOfIngredients[reqIngredient] >= reqAmount
+                )
+            ) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    static minus(recipe, copyOfIngredients, plannedAmount) {
+        //remove from copyOfIngredients the contents of recipe
+        for (const reqIngredient in recipe) {
+            const reqAmount = recipe[reqIngredient] * plannedAmount;
+            copyOfIngredients[reqIngredient] -= reqAmount;
+        }
+    }
+
+    calculate() {
+        const copyOfIngredients = { ...this.availableIngredients };
+        const actualCalendar = [];
+        this.calendar.forEach((day, datIndex) => {
+            actualCalendar.push({});
+            Object.keys(day).forEach((dishStr) =>  {
+                const dish = this.recipes[dishStr];
+                const plannedAmount = day[dishStr]
+                if (!User.canMake(dish, copyOfIngredients, plannedAmount)) {
+                    actualCalendar[datIndex][dishStr] = ["cnm", plannedAmount];
+                } else{
+                    User.minus(dish, copyOfIngredients, plannedAmount);
+                    actualCalendar[datIndex][dishStr] = ["cm", plannedAmount];
                 }
-                return true;
-            }
+            })
+        })
+        console.log(actualCalendar)
+        return actualCalendar;
+    }
+}
 
-            static minus(recipe, copyOfIngredients, plannedAmount) {
-                //remove from copyOfIngredients the contents of recipe
-                for (const reqIngredient in recipe) {
-                    const reqAmount = recipe[reqIngredient] * plannedAmount;
-                    copyOfIngredients[reqIngredient] -= reqAmount;
-                }
-            }
+// Create a new instance of User
+const shmuli = new User(
+    {
+        matza: { flour: 10, water: 20 },
+        donut: { flour: 1, water: 20, sugar: 3 },
+    },
+    { 
+        flour: 30, sugar: 70, water: 80 
+    },
+    [
+        {"matza": 3, "donut": 1}, 
+        {"matza": 1, "donut": 1}, 
+        {"matza": 1, "donut": 2}, 
+        {"matza": 1, "donut": 2}, 
+        {"matza": 1, "donut": 2}, 
+        {"matza": 1, "donut": 2}, 
+        {"matza": 1, "donut": 2}, 
+        {"matza": 1, "donut": 2}, 
+        {"matza": 1, "donut": 2}, 
+        {"matza": 1, "donut": 2}, 
+        {"matza": 1, "donut": 2}, 
 
-            calculate() {
-                const copyOfIngredients = { ...this.availableIngredients };
-                const actualCalendar = [];
-                this.calendar.forEach((day, datIndex) => {
-                    actualCalendar.push({});
-                    Object.keys(day).forEach((dishStr) =>  {
-                        const dish = this.recipes[dishStr];
-                        const plannedAmount = day[dishStr]
-                        if (!User.canMake(dish, copyOfIngredients, plannedAmount)) {
-                            actualCalendar[datIndex][dishStr] = ["cnm", plannedAmount];
-                        } else{
-                            User.minus(dish, copyOfIngredients, plannedAmount);
-                            actualCalendar[datIndex][dishStr] = ["cm", plannedAmount];
-                        }
-                    })
-                })
-                console.log(actualCalendar)
-                return actualCalendar;
-            }
+    ]
+);
+
+
+
+
+function Event({ dayIndex, event, status, plannedAmount }) {
+    const {deleteEvent, ChangePlannedAmount} = React.useContext(reRenderContext)
+    return (
+        <div className={`event ${status}`}>
+            <p className="eventAndNumberDisplay">{event}: {plannedAmount}</p>
+            <button className="delete" onClick={() => {
+                deleteEvent(dayIndex, event)
+            }}>x</button>
+            <div class="changeAmount">
+                <button className="minus" onClick={() => {
+                    ChangePlannedAmount(dayIndex, event, -1)
+                }}>-1</button>   
+                <button className="add" onClick={() => {
+                    ChangePlannedAmount(dayIndex, event, 1)
+                }}>+1</button>   
+            </div>
+        </div>
+    );
+}
+
+function Day({day, dayIndex}) {
+    const {addEvent} = React.useContext(reRenderContext)
+    return (
+        <div className="day">
+            {Object.keys(day).map((event) => (
+                <Event {...{ dayIndex, event }} status={day[event][0]} plannedAmount={day[event][1]} />
+            ))}
+            <button className="add-event" onClick={() => {
+                addEvent(dayIndex)
+            }}>add event</button>
+        </div>
+    );
+}
+
+function Calendar() {
+    const [data, setData] = React.useState(shmuli.calculate());
+
+    function deleteEvent(dayIndex, eventStr) {
+        console.log(`you are deleting, ${dayIndex}, ${eventStr}`)
+        delete shmuli.calendar[dayIndex][eventStr];
+        setData(shmuli.calculate());
+    }
+
+    function addEvent(dayIndex){
+        const eventStr = prompt("new event: ");
+        shmuli.calendar[dayIndex].push(eventStr);
+        setData(shmuli.calculate());
+    }
+
+    function ChangePlannedAmount(dayIndex, eventStr, numberToChangeBy){
+        if (shmuli.calendar[dayIndex][eventStr] + numberToChangeBy < 0){
+            return;
         }
+            shmuli.calendar[dayIndex][eventStr] += numberToChangeBy
+            setData(shmuli.calculate());
+    }
 
-        // Create a new instance of User
-        const shmuli = new User(
-            {
-                matza: { flour: 10, water: 20 },
-                donut: { flour: 1, water: 20, sugar: 3 },
-            },
-            { 
-                flour: 30, sugar: 70, water: 80 
-            },
-            [
-                {"matza": 3, "donut": 1}, 
-                {"matza": 1, "donut": 1}, 
-                {"matza": 1, "donut": 2}, 
-                {"matza": 1, "donut": 2}, 
-                {"matza": 1, "donut": 2}, 
-                {"matza": 1, "donut": 2}, 
-                {"matza": 1, "donut": 2}, 
-                {"matza": 1, "donut": 2}, 
-                {"matza": 1, "donut": 2}, 
-                {"matza": 1, "donut": 2}, 
-                {"matza": 1, "donut": 2}, 
-        
-            ]
-        );
+    return (
+        <div id="calendar">
+            <reRenderContext.Provider value={{deleteEvent, addEvent, ChangePlannedAmount}}>
+                {data.map((day, dayIndex) => (
+                    <Day key={dayIndex} {...{day, dayIndex}} />
+                ))}
+            </reRenderContext.Provider>
+        </div>
+    );
+}
 
+const reRenderContext = React.createContext();
 
-
-
-        function Event({ dayIndex, event, status, plannedAmount }) {
-            const {deleteEvent, ChangePlannedAmount} = React.useContext(reRenderContext)
-            return (
-                <div className={`event ${status}`}>
-                    <p className="eventAndNumberDisplay">{event}: {plannedAmount}</p>
-                    <button className="delete" onClick={() => {
-                        deleteEvent(dayIndex, event)
-                    }}>x</button>
-                    <div class="changeAmount">
-                        <button className="minus" onClick={() => {
-                            ChangePlannedAmount(dayIndex, event, -1)
-                        }}>-1</button>   
-                        <button className="add" onClick={() => {
-                            ChangePlannedAmount(dayIndex, event, 1)
-                        }}>+1</button>   
-                    </div>
-                </div>
-            );
-        }
-
-        function Day({day, dayIndex}) {
-            const {addEvent} = React.useContext(reRenderContext)
-            return (
-                <div className="day">
-                    {Object.keys(day).map((event) => (
-                        <Event {...{ dayIndex, event }} status={day[event][0]} plannedAmount={day[event][1]} />
-                    ))}
-                    <button className="add-event" onClick={() => {
-                        addEvent(dayIndex)
-                    }}>add event</button>
-                </div>
-            );
-        }
-
-        function Calendar() {
-            const [data, setData] = React.useState(shmuli.calculate());
-
-            function deleteEvent(dayIndex, eventStr) {
-                console.log(`you are deleting, ${dayIndex}, ${eventStr}`)
-                delete shmuli.calendar[dayIndex][eventStr];
-                setData(shmuli.calculate());
-            }
-
-            function addEvent(dayIndex){
-                const eventStr = prompt("new event: ");
-                shmuli.calendar[dayIndex].push(eventStr);
-                setData(shmuli.calculate());
-            }
-
-            function ChangePlannedAmount(dayIndex, eventStr, numberToChangeBy){
-                if (shmuli.calendar[dayIndex][eventStr] + numberToChangeBy < 0){
-                    return;
-                }
-                    shmuli.calendar[dayIndex][eventStr] += numberToChangeBy
-                    setData(shmuli.calculate());
-            }
-
-            return (
-                <div id="calendar">
-                    <reRenderContext.Provider value={{deleteEvent, addEvent, ChangePlannedAmount}}>
-                        {data.map((day, dayIndex) => (
-                            <Day key={dayIndex} {...{day, dayIndex}} />
-                        ))}
-                    </reRenderContext.Provider>
-                </div>
-            );
-        }
-
-        const reRenderContext = React.createContext();
-
-        ReactDOM.render(<Calendar />, document.getElementById("root"));
+ReactDOM.render(<Calendar />, document.getElementById("root"));
     </script>
 </head>
 
